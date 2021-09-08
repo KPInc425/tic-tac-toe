@@ -1,0 +1,23 @@
+#gameBoard {
+    display: flex;
+    border: 1px solid blue;
+    justify-content: center;
+    width: 308px;
+    height: 308px;
+    margin: auto;
+    flex-wrap: wrap;
+}
+
+.gameSlot {
+    border: 1px solid black;
+    min-width: 100px;
+    height: 100px;
+}
+
+.gameTitleLabel {
+    margin: 50px;
+}
+
+.center {
+    text-align: center;
+}
