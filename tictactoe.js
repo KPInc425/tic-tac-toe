@@ -37,7 +37,7 @@ const Gameboard = (() => {
     
 
 
-    const gameBoardArray = [tl,tm,tr,
+    let gameBoardArray = [tl,tm,tr,
                        ml,mm,mr,
                        bl,bm,br];
 
@@ -80,14 +80,21 @@ const Gameboard = (() => {
 
     const checkGameBoard = () => {
         if (gameBoardArray[0] == 1 && gameBoardArray[1] == 1 && gameBoardArray[2] == 1) {
-            alert("TESTING");
-            // Need a button to start the game, will turn gamestate to something other than 0
-            gameState = 0;
-            turnCountP1 = 0;
-            turnCountP2 = 0;
-            // Create this function
-            refreshGameBoard();
-            addClickListeners;
+            winScenario();
+        } else if (gameBoardArray[3] == 1 && gameBoardArray[4] == 1 && gameBoardArray[5] == 1) {
+            winScenario();
+        } else if (gameBoardArray[6] == 1 && gameBoardArray[7] == 1 && gameBoardArray[8] == 1) {
+            winScenario();
+        } else if (gameBoardArray[0] == 1 && gameBoardArray[3] == 1 && gameBoardArray[6] == 1) {
+            winScenario();
+        } else if (gameBoardArray[1] == 1 && gameBoardArray[4] == 1 && gameBoardArray[7] == 1) {
+            winScenario();
+        } else if (gameBoardArray[2] == 1 && gameBoardArray[5] == 1 && gameBoardArray[8] == 1) {
+            winScenario();
+        } else if (gameBoardArray[0] == 1 && gameBoardArray[4] == 1 && gameBoardArray[8] == 1) {
+            winScenario();
+        } else if (gameBoardArray[2] == 1 && gameBoardArray[4] == 1 && gameBoardArray[5] == 1) {
+            winScenario();
         }
 
     };
@@ -96,6 +103,18 @@ const Gameboard = (() => {
         gameBoard.forEach((div) => {
             div.textContent = "";
         })
+        gameState = 1;
+    }
+
+    function winScenario() {
+        alert("WINNER");
+        // Need a button to start the game, will turn gamestate to something other than 0
+        gameState = 0;
+        turnCountP1 = 0;
+        turnCountP2 = 0;
+        gameBoardArray = [];
+        // Create this function
+        refreshGameBoard();
     }
 
     return {
@@ -130,5 +149,6 @@ const Player = (name) => {
 // This is meant to control the flow of the game
 const Gameflow = (() => {
     //gameState = 0;
+    
 })
 
