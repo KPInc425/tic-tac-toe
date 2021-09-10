@@ -1,33 +1,110 @@
 // game board object declared with module
+// TESTING 
+gameState = 0;
+turnCountP1 = 0;
+turnCountP2 = 0;
+
+
 const Gameboard = (() => {
     const x = 1;
     const o = 2;
+    const gameBoard = document.querySelectorAll(".gameSlot");
 
-    let tl = [{slot: 0, state: 0,}];
-    let tm = [{slot: 1, state: 0,}];
-    let tr = [{slot: 2, state: 0,}];
-    let ml = [{slot: 3, state: 0,}];
-    let mm = [{slot: 4, state: 0,}];
-    let mr = [{slot: 5, state: 0,}];
-    let bl = [{slot: 6, state: 0,}];
-    let bm = [{slot: 7, state: 0,}];
-    let br = [{slot: 8, state: 0,}];
+    if (gameState == 0) {
+        var tl = 0;
+        var tm = 0;
+        var tr = 0;
+        var ml = 0;
+        var mm = 0;
+        var mr = 0;
+        var bl = 0;
+        var bm = 0;
+        var br = 0;
+        gameState = 1;
+        console.log(gameState);
+    }
 
-    const gameBoard = [tl,tm,tr,
+    const winningCombos = [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [2,4,6],
+    ]
+    
+
+
+    const gameBoardArray = [tl,tm,tr,
                        ml,mm,mr,
                        bl,bm,br];
 
-    const displayGameBoard = () => {
-        const gameSlotArray = document.querySelectorAll(".gameSlot");
-        gameSlotArray.forEach((div) => {
-            div.textContent = "X";
+
+    // ADD THIS TO PLAYERS?
+    const addClickListeners = (() => {
+        gameBoard.forEach((div) => {
+            div.addEventListener('click', () => {
+                let index = div.getAttribute('data-pos');
+                //alert("Clicked " + index);
+                if (gameState == 1) {
+                    if (div.textContent == "") {
+                        div.textContent = "X";
+                        gameBoardArray[index] = 1;
+                        
+                        gameState = 2;
+                        turnCountP1++;
+                        console.log("Player1 Turn# " + turnCountP1);
+                        checkGameBoard();
+
+
+                    }
+                } else if (gameState == 2){
+                    if (div.textContent == "") {
+                        div.textContent = "O";
+                        // CAN MAKE ALL OF THE INPUTS 1 AND THEN CHECK WHO HAS MOST TURNS TO DETERMINE WINNER.
+                        gameBoardArray[index] = 2;
+                        
+                        gameState = 1;
+                        turnCountP2++;
+                        console.log("Player2 Turn# " + turnCountP2);
+                        checkGameBoard();
+                    }
+                }
+                //div.textContent = "Clicked!" + index;
+            })
         })
-        // return gameSlotArray;
+    })();
+
+
+    const checkGameBoard = () => {
+        if (gameBoardArray[0] == 1 && gameBoardArray[1] == 1 && gameBoardArray[2] == 1) {
+            alert("TESTING");
+            // Need a button to start the game, will turn gamestate to something other than 0
+            gameState = 0;
+            turnCountP1 = 0;
+            turnCountP2 = 0;
+            // Create this function
+            refreshGameBoard();
+            addClickListeners;
+        }
+
     };
 
+    const refreshGameBoard = () => {
+        gameBoard.forEach((div) => {
+            div.textContent = "";
+        })
+    }
+
     return {
-        gameBoard,
-        displayGameBoard,
+        gameBoardArray,
+        checkGameBoard,
+        // displayGameBoard, 
+        // tl,tm,tr,
+        // ml,mm,mr,
+        // bl,bm,br,
     };
 })();
 
@@ -52,6 +129,6 @@ const Player = (name) => {
 // Gameflow object declared with module 
 // This is meant to control the flow of the game
 const Gameflow = (() => {
-
+    //gameState = 0;
 })
 
