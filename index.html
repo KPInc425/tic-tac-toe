@@ -9,8 +9,19 @@
     <body>
         <header>
             <h1 class="center gameTitleLabel">Tic-Tac-Toe</h1>
+            <nav>
+                <button id="newGame">New Game</button>
+                <button id="vsAI">VS AI</button> 
+                <button id="changeDifficulty">Change Difficulty</button>
+            </nav>
         </header>
         <main>
+            <div id="playerOneHUD">
+                <p>Player One Name</p>
+                <p>Player One Stats</p>
+                <p>Player One Marker</p>
+                <button id="playerOneForm" data-id="2">New Player</button>
+            </div>
             <div id="gameBoard">
                 <div class="gameSlot" data-pos="0"></div>
                 <div class="gameSlot" data-pos="1"></div>
@@ -24,7 +35,27 @@
                 <div class="gameSlot" data-pos="7"></div>
                 <div class="gameSlot" data-pos="8"></div>
             </div>
+            <div id="playerTwoHUD">
+                <p>Player Two Name</p>
+                <p>Player Two Stats</p>
+                <p>Player Two Marker</p>
+                <button id="playerTwoForm" data-id="2">New Player</button>
+            </div>
 
+            <div id="formContainer">
+                <form id="newPlayerForm">
+                    <label>Player Name</label>
+                    <br>
+                    <input type="text" placeholder="Input Name Here">
+                    <br>
+                    <label>Marker Symbol</label>
+                    <br>
+                    <input type="text" placeholder="Input 1 character Symbol here">
+                    <br>
+                    <button id="addNewPlayer">Add New Player</button>
+                </form>
+            </div>
+            
         </main>
         <footer>
 
