@@ -224,6 +224,8 @@ const Gameflow = () => {
                                 console.log("Player1 Turn# " + playerOne.playerTurn);
                                 checkGameBoard();
                             }
+                        } 
+                        if (gameState == 2) {
                             index = makeMoveAI();
                             console.log(`index: ${index}`);
                             let markedGameSlot = document.querySelector(`.gameSlot[data-pos="${index}"]`);
@@ -231,6 +233,10 @@ const Gameflow = () => {
                                 index = makeMoveAI();
                                 console.log(`index: ${index}`);
                                 markedGameSlot = document.querySelector(`.gameSlot[data-pos="${index}"]`);
+                                console.log("PlayerAI turn# " + playerAI.playerTurn);
+                                if (playerAI.playerTurn == 4) {
+                                    break;
+                                }
                             } 
 
                             if (markedGameSlot.textContent == "") {
@@ -242,14 +248,13 @@ const Gameflow = () => {
                             playerAI.playerTurn++;
                             console.log("Player2 Turn# " + playerAI.playerTurn);
                             checkGameBoard();
-
-                        } 
+                        }
                     }
                 })
             })
         })();
     
-    
+        // This can DEF be rebuilt better
         const checkGameBoard = () => {
             if (gameBoardArray[0] == 1 && gameBoardArray[1] == 1 && gameBoardArray[2] == 1) {
                 playerWinAlert(playerOne);                
@@ -299,9 +304,25 @@ const Gameflow = () => {
         }
 
         function playerWinAlert(player) {
-            player.win();
-            player.playerStats++;
+            
+            // WORKAROUND FOR DYNAMICHUD
+            if (player === playerTwo) {
+                if (!aiOn) {
+                    player.win();
+                    player.playerStats++;
+                } else {
+                    playerAI.win();
+                    playerAI.playerStats++;
+                }
+            } else {
+                player.win();
+                player.playerStats++;
+            }
+            
+            
+
             gameState = 0;
+            dynamicHUD();
         }
     
         function resetGameData() {
