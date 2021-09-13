@@ -9,6 +9,7 @@ const Gameflow = () => {
     const Player = (name, marker) => {
         let playerTurn = 0;
         let playerMarker = marker;
+        let playerStats = 0;
         const getName = () => name;
         const win = () => {
             console.log(name + " Has Won This Round!");
@@ -22,28 +23,37 @@ const Gameflow = () => {
             makeMove,
             playerTurn,
             playerMarker,
+            playerStats,
         };
     }
 
     // TESTING
-    playerOne = Player("Jonny", "X");
-    playerTwo = Player("Jarvis", "O");
+    playerOne = Player("Player 1", "X");
+    playerTwo = Player("Player 2", "O");
 
     const dynamicHUD = () => {
         const playerOneName = document.querySelector('#playerOneName');
         const playerOneStats = document.querySelector('#playerOneStats');
         const playerOneMarker = document.querySelector('#playerOneMarker');
         playerOneName.textContent = playerOne.getName();
-        // playerOneStats.textContent = playerOne.playerStats;
+        playerOneStats.textContent = playerOne.playerStats;
         playerOneMarker.textContent = playerOne.playerMarker;
 
-        const playerTwoName = document.querySelector('#playerTwoName');
-        const playerTwoStats = document.querySelector('#playerTwoStats');
-        const playerTwoMarker = document.querySelector('#playerTwoMarker');
-        playerTwoName.textContent = playerTwo.getName();
-        // playerTwoStats.textContent = playerOne.playerStats;
-        playerTwoMarker.textContent = playerTwo.playerMarker;
-
+        if (!aiOn) {
+            const playerTwoName = document.querySelector('#playerTwoName');
+            const playerTwoStats = document.querySelector('#playerTwoStats');
+            const playerTwoMarker = document.querySelector('#playerTwoMarker');
+            playerTwoName.textContent = playerTwo.getName();
+            playerTwoStats.textContent = playerTwo.playerStats;
+            playerTwoMarker.textContent = playerTwo.playerMarker;
+        } else {
+            const playerTwoName = document.querySelector('#playerTwoName');
+            const playerTwoStats = document.querySelector('#playerTwoStats');
+            const playerTwoMarker = document.querySelector('#playerTwoMarker');
+            playerTwoName.textContent = playerAI.getName();
+            playerTwoStats.textContent = playerAI.playerStats;
+            playerTwoMarker.textContent = playerAI.playerMarker;
+        }
     };    
 
     dynamicHUD();
@@ -62,13 +72,14 @@ const Gameflow = () => {
             if (!aiOn) {
                 console.log("You Challenged Jarvis!")
                 buttonVSAI.textContent = "VS Human";
-                playerTwo = Player("Jarvis", "O");
+                playerAI = Player("Jarvis", "O");
                 aiOn = 1;
+                dynamicHUD();
             } else {
                 console.log("You Challenged another Human!")
                 buttonVSAI.textContent = "VS AI";
-                //playerTwo = Player(playerName, marker);
                 aiOn = 0;
+                dynamicHUD();
             }
             
         })
@@ -179,33 +190,61 @@ const Gameflow = () => {
                 div.addEventListener('click', () => {
                     let index = div.getAttribute('data-pos');
                     //alert("Clicked " + index);
-                    if (gameState == 1) {
-                        if (div.textContent == "") {
-                            div.textContent = playerOne.playerMarker;
-                            gameBoardArray[index] = 1;
-                            
-                            gameState = 2;
-                            //alert("GameState: " + gameState);
-                            playerOne.playerTurn++;
-                            console.log("Player1 Turn# " + playerOne.playerTurn);
-                            checkGameBoard();
-    
-    
+                    if (!aiOn) {
+                        if (gameState == 1) {
+                            if (div.textContent == "") {
+                                div.textContent = playerOne.playerMarker;
+                                gameBoardArray[index] = 1;
+                                gameState = 2;
+                                //alert("GameState: " + gameState);
+                                playerOne.playerTurn++;
+                                console.log("Player1 Turn# " + playerOne.playerTurn);
+                                checkGameBoard();
+                            }
+                        } else if (gameState == 2){
+                            if (div.textContent == "") {
+                                div.textContent = playerTwo.playerMarker;
+                                // CAN MAKE ALL OF THE INPUTS 1 AND THEN CHECK WHO HAS MOST TURNS TO DETERMINE WINNER.
+                                gameBoardArray[index] = 2;
+                                gameState = 1;
+                                //alert("GameState: " + gameState);
+                                playerTwo.playerTurn++;
+                                console.log("Player2 Turn# " + playerTwo.playerTurn);
+                                checkGameBoard();
+                            }
                         }
-                    } else if (gameState == 2){
-                        if (div.textContent == "") {
-                            div.textContent = playerTwo.playerMarker;
-                            // CAN MAKE ALL OF THE INPUTS 1 AND THEN CHECK WHO HAS MOST TURNS TO DETERMINE WINNER.
+                    } else {
+                        if (gameState == 1) {
+                            if (div.textContent == "") {
+                                div.textContent = playerOne.playerMarker;
+                                gameBoardArray[index] = 1;
+                                gameState = 2;
+                                //alert("GameState: " + gameState);
+                                playerOne.playerTurn++;
+                                console.log("Player1 Turn# " + playerOne.playerTurn);
+                                checkGameBoard();
+                            }
+                            index = makeMoveAI();
+                            console.log(`index: ${index}`);
+                            let markedGameSlot = document.querySelector(`.gameSlot[data-pos="${index}"]`);
+                            while (!(markedGameSlot.textContent == "")) {
+                                index = makeMoveAI();
+                                console.log(`index: ${index}`);
+                                markedGameSlot = document.querySelector(`.gameSlot[data-pos="${index}"]`);
+                            } 
+
+                            if (markedGameSlot.textContent == "") {
+                                console.log("Marking Slot!")
+                                markedGameSlot.textContent = playerAI.playerMarker;
+                            }
                             gameBoardArray[index] = 2;
-                            
                             gameState = 1;
-                            //alert("GameState: " + gameState);
-                            playerTwo.playerTurn++;
-                            console.log("Player2 Turn# " + playerTwo.playerTurn);
+                            playerAI.playerTurn++;
+                            console.log("Player2 Turn# " + playerAI.playerTurn);
                             checkGameBoard();
-                        }
+
+                        } 
                     }
-                    //div.textContent = "Clicked!" + index;
                 })
             })
         })();
@@ -213,56 +252,37 @@ const Gameflow = () => {
     
         const checkGameBoard = () => {
             if (gameBoardArray[0] == 1 && gameBoardArray[1] == 1 && gameBoardArray[2] == 1) {
-                playerOne.win();
-                gameState = 0;
-                
+                playerWinAlert(playerOne);                
             } else if (gameBoardArray[3] == 1 && gameBoardArray[4] == 1 && gameBoardArray[5] == 1) {
-                playerOne.win();
-                gameState = 0;
-                
+                playerWinAlert(playerOne);
             } else if (gameBoardArray[6] == 1 && gameBoardArray[7] == 1 && gameBoardArray[8] == 1) {
-                playerOne.win();
-                gameState = 0;
-                
+                playerWinAlert(playerOne);
             } else if (gameBoardArray[0] == 1 && gameBoardArray[3] == 1 && gameBoardArray[6] == 1) {
-                playerOne.win();
-                gameState = 0;
+                playerWinAlert(playerOne);
             } else if (gameBoardArray[1] == 1 && gameBoardArray[4] == 1 && gameBoardArray[7] == 1) {
-                playerOne.win();
-                gameState = 0;
+                playerWinAlert(playerOne);
             } else if (gameBoardArray[2] == 1 && gameBoardArray[5] == 1 && gameBoardArray[8] == 1) {
-                playerOne.win();
-                gameState = 0;
+                playerWinAlert(playerOne);
             } else if (gameBoardArray[0] == 1 && gameBoardArray[4] == 1 && gameBoardArray[8] == 1) {
-                playerOne.win();
-                gameState = 0;
+                playerWinAlert(playerOne);
             } else if (gameBoardArray[2] == 1 && gameBoardArray[4] == 1 && gameBoardArray[6] == 1) {
-                playerOne.win();
-                gameState = 0;
+                playerWinAlert(playerOne);
             } else if (gameBoardArray[0] == 2 && gameBoardArray[1] == 2 && gameBoardArray[2] == 2) {
-                playerTwo.win();
-                gameState = 0;
+                playerWinAlert(playerTwo);
             } else if (gameBoardArray[3] == 2 && gameBoardArray[4] == 2 && gameBoardArray[5] == 2) {
-                playerTwo.win();
-                gameState = 0;
+                playerWinAlert(playerTwo);
             } else if (gameBoardArray[6] == 2 && gameBoardArray[7] == 2 && gameBoardArray[8] == 2) {
-                playerTwo.win();
-                gameState = 0;
+                playerWinAlert(playerTwo);
             } else if (gameBoardArray[0] == 2 && gameBoardArray[3] == 2 && gameBoardArray[6] == 2) {
-                playerTwo.win();
-                gameState = 0;
+                playerWinAlert(playerTwo);
             } else if (gameBoardArray[1] == 2 && gameBoardArray[4] == 2 && gameBoardArray[7] == 2) {
-                playerTwo.win();
-                gameState = 0;
+                playerWinAlert(playerTwo);
             } else if (gameBoardArray[2] == 2 && gameBoardArray[5] == 2 && gameBoardArray[8] == 2) {
-                playerTwo.win();
-                gameState = 0;
+                playerWinAlert(playerTwo);
             } else if (gameBoardArray[0] == 2 && gameBoardArray[4] == 2 && gameBoardArray[8] == 2) {
-                playerTwo.win();
-                gameState = 0;
+                playerWinAlert(playerTwo);
             } else if (gameBoardArray[2] == 2 && gameBoardArray[4] == 2 && gameBoardArray[6] == 2) {
-                playerTwo.win();
-                gameState = 0;
+                playerWinAlert(playerTwo);
             } else if (playerOne.playerTurn == 5) {
                 console.log("Game was a Tie!")
                 gameState = 0;
@@ -277,6 +297,12 @@ const Gameflow = () => {
             })
             gameState = 1;
         }
+
+        function playerWinAlert(player) {
+            player.win();
+            player.playerStats++;
+            gameState = 0;
+        }
     
         function resetGameData() {
             //alert("WINNER");
@@ -284,6 +310,7 @@ const Gameflow = () => {
             gameState = 0;
             playerOne.playerTurn = 0;
             playerTwo.playerTurn = 0;
+            playerAI.playerTurn = 0;
             gameBoardArray = [];
             // Create this function
             // refreshGameBoard();
@@ -300,6 +327,32 @@ const Gameflow = () => {
             // bl,bm,br,
         };
     })();
+
+    const makeMoveAI = () => {
+        if (gameDifficulty == 0) {
+            const index = getRdmInt(0, 8);
+            return index;
+        }
+
+        if (gameDifficulty == 1) {
+            console.log("Game Difficulty 2 WIP");
+            const index = getRdmInt(0, 8);
+            return index;
+        }
+
+        if (gameDifficulty == 2) {
+            console.log("Game Difficulty 3 WIP");
+            const index = getRdmInt(0, 8);
+            return index;
+        }
+
+        // const index = getRdmInt(0, 8);
+        // return index;
+    }
+
+    function getRdmInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
 }
 
