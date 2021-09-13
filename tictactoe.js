@@ -28,8 +28,10 @@ const Gameflow = () => {
     }
 
     // TESTING
-    playerOne = Player("Player 1", "X");
-    playerTwo = Player("Player 2", "O");
+    let playerOne = Player("Player 1", "X");
+    let playerTwo = Player("Player 2", "O");
+    // ADD ABILITY TO EDIT AI NAME AND MARKER
+    let playerAI = Player("Jarvis", "O");
 
     const dynamicHUD = () => {
         const playerOneName = document.querySelector('#playerOneName');
@@ -72,7 +74,7 @@ const Gameflow = () => {
             if (!aiOn) {
                 console.log("You Challenged Jarvis!")
                 buttonVSAI.textContent = "VS Human";
-                playerAI = Player("Jarvis", "O");
+                // playerAI = Player("Jarvis", "O");
                 aiOn = 1;
                 dynamicHUD();
             } else {
