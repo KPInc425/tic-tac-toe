@@ -11,7 +11,7 @@ const Gameflow = () => {
         let playerMarker = marker;
         const getName = () => name;
         const win = () => {
-            console.log(getName() + " Has Won This Round!");
+            console.log(name + " Has Won This Round!");
         };
         const makeMove = () => {
             
@@ -25,7 +25,26 @@ const Gameflow = () => {
         };
     }
 
+    // TESTING
     playerOne = Player("Jonny", "X");
+    playerTwo = Player("Jarvis", "O");
+
+    const dynamicHUD = (() => {
+        const playerOneName = document.querySelector('#playerOneName');
+        const playerOneStats = document.querySelector('#playerOneStats');
+        const playerOneMarker = document.querySelector('#playerOneMarker');
+        playerOneName.textContent = playerOne.getName();
+        // playerOneStats.textContent = playerOne.playerStats;
+        playerOneMarker.textContent = playerOne.playerMarker;
+
+        const playerTwoName = document.querySelector('#playerTwoName');
+        const playerTwoStats = document.querySelector('#playerTwoStats');
+        const playerTwoMarker = document.querySelector('#playerTwoMarker');
+        playerTwoName.textContent = playerTwo.getName();
+        // playerTwoStats.textContent = playerOne.playerStats;
+        playerTwoMarker.textContent = playerTwo.playerMarker;
+
+    })();
     
 
     // let turnCountP1 = 0;
@@ -34,6 +53,7 @@ const Gameflow = () => {
         const buttonNewGame = document.querySelector('#newGame');
         buttonNewGame.addEventListener('click', () => {
             console.log("New Game!")
+            Gameboard.refreshGameBoard();
         })
 
         const buttonVSAI = document.querySelector('#vsAI');
@@ -46,7 +66,7 @@ const Gameflow = () => {
             } else {
                 console.log("You Challenged another Human!")
                 buttonVSAI.textContent = "VS AI";
-                playerTwo = Player(playerName, marker);
+                //playerTwo = Player(playerName, marker);
                 aiOn = 0;
             }
             
@@ -65,6 +85,52 @@ const Gameflow = () => {
                 console.log("GameDifficulty Changed to " + gameDifficulty);
             }
         })
+        // Get new player button divs
+        const newPlayerButtonArray = document.querySelectorAll(".buttonPlayerForm");
+        newPlayerButtonArray.forEach((div) => {
+            div.addEventListener('click', () => {
+                // get index of button for proper allocation
+                let index = div.getAttribute('data-id');
+                alert("Testing! " + index);
+                const showPlayerForm = (() => {
+                    const newPlayerForm = document.querySelector('#formContainer');
+                    newPlayerForm.style.display = "block";
+                    const buttonAddNewPlayerButton = document.querySelector('#buttonAddNewPlayer');
+                    const playerName = document.querySelector('#playerName');
+                    const playerMarker = document.querySelector('#playerMarker');
+                    buttonAddNewPlayerButton.addEventListener('click', () => {
+                        // create players
+                        if (playerName.value == "") {
+                            alert("Please input player name!")
+                        } else if (playerMarker.length > 1 || playerMarker.value == "") {
+                            alert("Please input a Player Marker (ONLY 1 Char)");
+                        } else {
+                            if (index == 1) {
+                                alert("Index 1: " + index);
+                                playerOne = Player(playerName.value, playerMarker.value);
+                                // alert(playerName.value);
+                                playerName.value = "";
+                                playerMarker.value = "";
+                                newPlayerForm.style.display = "none";
+                                index = 0;
+                            } 
+                            if (index == 2) {
+                                alert("Index 2: " + index);
+                                playerTwo = Player(playerName.value, playerMarker.value);
+                                playerName.value = "";
+                                playerMarker.value = "";
+                                newPlayerForm.style.display = "none";
+                                //This was duplicating for some reason
+                                index = 0;
+                            }
+                        }
+                        
+                    })
+                })();
+            })
+        })
+
+    
     })();
     
     const Gameboard = (() => {
@@ -86,16 +152,16 @@ const Gameflow = () => {
             console.log(gameState);
         }
     
-        const winningCombos = [
-            [0,1,2],
-            [3,4,5],
-            [6,7,8],
-            [0,3,6],
-            [1,4,7],
-            [2,5,8],
-            [0,4,8],
-            [2,4,6],
-        ]
+        // const winningCombos = [
+        //     [0,1,2],
+        //     [3,4,5],
+        //     [6,7,8],
+        //     [0,3,6],
+        //     [1,4,7],
+        //     [2,5,8],
+        //     [0,4,8],
+        //     [2,4,6],
+        // ]
         
     
     
@@ -112,7 +178,7 @@ const Gameflow = () => {
                     //alert("Clicked " + index);
                     if (gameState == 1) {
                         if (div.textContent == "") {
-                            div.textContent = "X";
+                            div.textContent = playerOne.playerMarker;
                             gameBoardArray[index] = 1;
                             
                             gameState = 2;
@@ -125,7 +191,7 @@ const Gameflow = () => {
                         }
                     } else if (gameState == 2){
                         if (div.textContent == "") {
-                            div.textContent = "O";
+                            div.textContent = playerTwo.playerMarker;
                             // CAN MAKE ALL OF THE INPUTS 1 AND THEN CHECK WHO HAS MOST TURNS TO DETERMINE WINNER.
                             gameBoardArray[index] = 2;
                             
@@ -145,64 +211,71 @@ const Gameflow = () => {
         const checkGameBoard = () => {
             if (gameBoardArray[0] == 1 && gameBoardArray[1] == 1 && gameBoardArray[2] == 1) {
                 playerOne.win();
-                winScenario();
+                gameState = 0;
+                
             } else if (gameBoardArray[3] == 1 && gameBoardArray[4] == 1 && gameBoardArray[5] == 1) {
                 playerOne.win();
-                winScenario();
+                gameState = 0;
+                
             } else if (gameBoardArray[6] == 1 && gameBoardArray[7] == 1 && gameBoardArray[8] == 1) {
                 playerOne.win();
-                winScenario();
+                gameState = 0;
+                
             } else if (gameBoardArray[0] == 1 && gameBoardArray[3] == 1 && gameBoardArray[6] == 1) {
                 playerOne.win();
-                winScenario();
+                gameState = 0;
             } else if (gameBoardArray[1] == 1 && gameBoardArray[4] == 1 && gameBoardArray[7] == 1) {
                 playerOne.win();
-                winScenario();
+                gameState = 0;
             } else if (gameBoardArray[2] == 1 && gameBoardArray[5] == 1 && gameBoardArray[8] == 1) {
                 playerOne.win();
-                winScenario();
+                gameState = 0;
             } else if (gameBoardArray[0] == 1 && gameBoardArray[4] == 1 && gameBoardArray[8] == 1) {
                 playerOne.win();
-                winScenario();
-            } else if (gameBoardArray[2] == 1 && gameBoardArray[4] == 1 && gameBoardArray[5] == 1) {
+                gameState = 0;
+            } else if (gameBoardArray[2] == 1 && gameBoardArray[4] == 1 && gameBoardArray[6] == 1) {
                 playerOne.win();
-                winScenario();
+                gameState = 0;
             } else if (gameBoardArray[0] == 2 && gameBoardArray[1] == 2 && gameBoardArray[2] == 2) {
                 playerTwo.win();
-                winScenario();
+                gameState = 0;
             } else if (gameBoardArray[3] == 2 && gameBoardArray[4] == 2 && gameBoardArray[5] == 2) {
                 playerTwo.win();
-                winScenario();
+                gameState = 0;
             } else if (gameBoardArray[6] == 2 && gameBoardArray[7] == 2 && gameBoardArray[8] == 2) {
                 playerTwo.win();
-                winScenario();
+                gameState = 0;
             } else if (gameBoardArray[0] == 2 && gameBoardArray[3] == 2 && gameBoardArray[6] == 2) {
                 playerTwo.win();
-                winScenario();
+                gameState = 0;
             } else if (gameBoardArray[1] == 2 && gameBoardArray[4] == 2 && gameBoardArray[7] == 2) {
                 playerTwo.win();
-                winScenario();
+                gameState = 0;
             } else if (gameBoardArray[2] == 2 && gameBoardArray[5] == 2 && gameBoardArray[8] == 2) {
                 playerTwo.win();
-                winScenario();
+                gameState = 0;
             } else if (gameBoardArray[0] == 2 && gameBoardArray[4] == 2 && gameBoardArray[8] == 2) {
                 playerTwo.win();
-                winScenario();
-            } else if (gameBoardArray[2] == 2 && gameBoardArray[4] == 2 && gameBoardArray[5] == 2) {
+                gameState = 0;
+            } else if (gameBoardArray[2] == 2 && gameBoardArray[4] == 2 && gameBoardArray[6] == 2) {
                 playerTwo.win();
-                winScenario();
+                gameState = 0;
+            } else if (playerOne.playerTurn == 5) {
+                console.log("Game was a Tie!")
+                gameState = 0;
             }
     
         };
     
         const refreshGameBoard = () => {
+            resetGameData();
             gameBoard.forEach((div) => {
                 div.textContent = "";
             })
             gameState = 1;
         }
     
-        function winScenario() {
+        function resetGameData() {
             //alert("WINNER");
             // Need a button to start the game, will turn gamestate to something other than 0
             gameState = 0;
@@ -210,13 +283,14 @@ const Gameflow = () => {
             playerTwo.playerTurn = 0;
             gameBoardArray = [];
             // Create this function
-            refreshGameBoard();
+            // refreshGameBoard();
         }
     
         return {
             gameBoardArray,
             checkGameBoard,
-            winningCombos,
+            // winningCombos,
+            refreshGameBoard,
             // displayGameBoard, 
             // tl,tm,tr,
             // ml,mm,mr,

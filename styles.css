@@ -79,3 +79,7 @@ label {
 input {
     text-align: center;
 }
+
+.playerHUD {
+    padding: 50px;
+}

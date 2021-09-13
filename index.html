@@ -16,11 +16,11 @@
             </nav>
         </header>
         <main>
-            <div id="playerOneHUD">
-                <p>Player One Name</p>
-                <p>Player One Stats</p>
-                <p>Player One Marker</p>
-                <button id="playerOneForm" data-id="2">New Player</button>
+            <div id="playerOneHUD" class="playerHUD">
+                <p id="playerOneName">Player One Name</p>
+                <p id="playerOneStats">Player One Stats</p>
+                <p id="playerOneMarker">Player One Marker</p>
+                <button class="buttonPlayerForm" data-id="1">New Player</button>
             </div>
             <div id="gameBoard">
                 <div class="gameSlot" data-pos="0"></div>
@@ -35,24 +35,24 @@
                 <div class="gameSlot" data-pos="7"></div>
                 <div class="gameSlot" data-pos="8"></div>
             </div>
-            <div id="playerTwoHUD">
-                <p>Player Two Name</p>
-                <p>Player Two Stats</p>
-                <p>Player Two Marker</p>
-                <button id="playerTwoForm" data-id="2">New Player</button>
+            <div id="playerTwoHUD" class="playerHUD">
+                <p id="playerTwoName">Player Two Name</p>
+                <p id="playerTwoStats">Player Two Stats</p>
+                <p id="playerTwoMarker">Player Two Marker</p>
+                <button class="buttonPlayerForm" data-id="2">New Player</button>
             </div>
 
             <div id="formContainer">
                 <form id="newPlayerForm">
                     <label>Player Name</label>
                     <br>
-                    <input type="text" placeholder="Input Name Here">
+                    <input type="text" id="playerName" placeholder="Input Name Here">
                     <br>
                     <label>Marker Symbol</label>
                     <br>
-                    <input type="text" placeholder="Input 1 character Symbol here">
+                    <input type="text" id="playerMarker" placeholder="Input 1 character Symbol here">
                     <br>
-                    <button id="addNewPlayer">Add New Player</button>
+                    <button type="button" id="buttonAddNewPlayer">Add New Player</button>
                 </form>
             </div>
             
