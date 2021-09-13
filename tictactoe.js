@@ -29,7 +29,7 @@ const Gameflow = () => {
     playerOne = Player("Jonny", "X");
     playerTwo = Player("Jarvis", "O");
 
-    const dynamicHUD = (() => {
+    const dynamicHUD = () => {
         const playerOneName = document.querySelector('#playerOneName');
         const playerOneStats = document.querySelector('#playerOneStats');
         const playerOneMarker = document.querySelector('#playerOneMarker');
@@ -44,8 +44,9 @@ const Gameflow = () => {
         // playerTwoStats.textContent = playerOne.playerStats;
         playerTwoMarker.textContent = playerTwo.playerMarker;
 
-    })();
-    
+    };    
+
+    dynamicHUD();
 
     // let turnCountP1 = 0;
     // let turnCountP2 = 0;
@@ -113,6 +114,7 @@ const Gameflow = () => {
                                 playerMarker.value = "";
                                 newPlayerForm.style.display = "none";
                                 index = 0;
+                                dynamicHUD();
                             } 
                             if (index == 2) {
                                 alert("Index 2: " + index);
@@ -122,6 +124,7 @@ const Gameflow = () => {
                                 newPlayerForm.style.display = "none";
                                 //This was duplicating for some reason
                                 index = 0;
+                                dynamicHUD();
                             }
                         }
                         
