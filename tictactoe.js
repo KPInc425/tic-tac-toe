@@ -67,6 +67,9 @@ const Gameflow = () => {
         buttonNewGame.addEventListener('click', () => {
             console.log("New Game!")
             Gameboard.refreshGameBoard();
+            Gameboard.gameBoardArray = [0,0,0,
+                                        0,0,0,
+                                        0,0,0];
         })
 
         const buttonVSAI = document.querySelector('#vsAI');
@@ -180,10 +183,11 @@ const Gameflow = () => {
         // ]
         
     
-    
-        let gameBoardArray = [tl,tm,tr,
-                           ml,mm,mr,
-                           bl,bm,br];
+        // This could be better represented as 3 objects in an array gameBoardArray = [{_,_,_},{_,_,_},{_,_,_}]
+        // I think I was having trouble comparing the objects...
+        var gameBoardArray = [0,0,0,
+                              0,0,0,
+                              0,0,0];
     
     
         // ADD THIS TO PLAYERS?
@@ -201,7 +205,7 @@ const Gameflow = () => {
                                 //alert("GameState: " + gameState);
                                 playerOne.playerTurn++;
                                 console.log("Player1 Turn# " + playerOne.playerTurn);
-                                checkGameBoard();
+                                checkGameBoard(playerOne, 1);
                             }
                         } else if (gameState == 2){
                             if (div.textContent == "") {
@@ -212,7 +216,7 @@ const Gameflow = () => {
                                 //alert("GameState: " + gameState);
                                 playerTwo.playerTurn++;
                                 console.log("Player2 Turn# " + playerTwo.playerTurn);
-                                checkGameBoard();
+                                checkGameBoard(playerTwo, 2);
                             }
                         }
                     } else {
@@ -224,76 +228,270 @@ const Gameflow = () => {
                                 //alert("GameState: " + gameState);
                                 playerOne.playerTurn++;
                                 console.log("Player1 Turn# " + playerOne.playerTurn);
-                                checkGameBoard();
+                                let boardValue = checkGameBoard(playerOne, 1);
+                                //console.log("AI: The value of this board is " + boardValue);
                             }
                         } 
                         if (gameState == 2) {
-                            index = makeMoveAI();
-                            console.log(`index: ${index}`);
-                            let markedGameSlot = document.querySelector(`.gameSlot[data-pos="${index}"]`);
-                            while (!(markedGameSlot.textContent == "")) {
-                                index = makeMoveAI();
-                                console.log(`index: ${index}`);
-                                markedGameSlot = document.querySelector(`.gameSlot[data-pos="${index}"]`);
-                                console.log("PlayerAI turn# " + playerAI.playerTurn);
-                                if (playerAI.playerTurn == 4) {
-                                    break;
-                                }
-                            } 
+                            index = makeMoveAI(gameBoardArray);
+                            
+                            //console.log(`index: ${index}`);
+                            
+                            returnObj = isMovesLeft(index);
+
+                            index = returnObj.index;
+                            //console.log("#2 " + returnObj.index);
+                            let markedGameSlot = returnObj.markedGameSlot;
 
                             if (markedGameSlot.textContent == "") {
-                                console.log("Marking Slot!")
+                                //console.log("Marking Slot!")
                                 markedGameSlot.textContent = playerAI.playerMarker;
                             }
                             gameBoardArray[index] = 2;
                             gameState = 1;
                             playerAI.playerTurn++;
-                            console.log("Player2 Turn# " + playerAI.playerTurn);
-                            checkGameBoard();
+                            console.log("PlayerAI Turn# " + playerAI.playerTurn);
+                            let boardValue = checkGameBoard(playerAI, 2);
+                            //console.log("AI: The value of this board is " + boardValue);
                         }
+                    }
+                    if (gameState == 0) {
+                        gameBoardArray = [0,0,0,
+                                          0,0,0,
+                                          0,0,0];
                     }
                 })
             })
         })();
+
+
+        // // This could likely be combined to evaluate winner as well (CHANGE NAME TO evaluateBoard)
+        // const evaluateAINextMove = (player, marker) => {
+        //     // Rows
+        //     if (gameBoardArray[0] == marker && gameBoardArray[1] == marker && gameBoardArray[2] == marker) {
+               
+        //         if (player == playerOne) {
+        //             return 10;
+        //         } else {
+        //             return -10;
+        //         }   
+        //     } else if (gameBoardArray[3] == marker && gameBoardArray[4] == marker && gameBoardArray[5] == marker) {
+               
+        //         if (player == playerOne) {
+        //             return 10;
+        //         } else {
+        //             return -10;
+        //         }   
+        //     } else if (gameBoardArray[6] == marker && gameBoardArray[7] == marker && gameBoardArray[8] == marker) {
+               
+        //         if (player == playerOne) {
+        //             return 10;
+        //         } else {
+        //             return -10;
+        //         }   
+        //     // Columns
+        //     } else if (gameBoardArray[0] == marker && gameBoardArray[3] == marker && gameBoardArray[6] == marker) {
+               
+        //         if (player == playerOne) {
+        //             return 10;
+        //         } else {
+        //             return -10;
+        //         }   
+        //     } else if (gameBoardArray[1] == marker && gameBoardArray[4] == marker && gameBoardArray[7] == marker) {
+               
+        //         if (player == playerOne) {
+        //             return 10;
+        //         } else {
+        //             return -10;
+        //         }   
+        //     } else if (gameBoardArray[2] == marker && gameBoardArray[5] == marker && gameBoardArray[8] == marker) {
+               
+        //         if (player == playerOne) {
+        //             return 10;
+        //         } else {
+        //             return -10;
+        //         }   
+        //     // Diaganol
+        //     } else if (gameBoardArray[0] == marker && gameBoardArray[4] == marker && gameBoardArray[8] == marker) {
+               
+        //         if (player == playerOne) {
+        //             return 10;
+        //         } else {
+        //             return -10;
+        //         }   
+        //     } else if (gameBoardArray[2] == marker && gameBoardArray[4] == marker && gameBoardArray[6] == marker) {
+               
+        //         if (player == playerOne) {
+        //             return 10;
+        //         } else {
+        //             return -10;
+        //         }   
+        //     } else if (playerOne.playerTurn == 5) {
+
+        //         return 0;
+        //     }
+        //     return 0;
+    
+        // };
+
+        // function minimax(board, depth, isMax) {
+        //     let score = evaluateAINextMove(playerAI, board);
+
+        //     if (score == 10) {
+        //         return score;
+        //     }
+
+        //     if (score == -10) {
+        //         return score;
+        //     }
+
+        //     if (isMovesLeft(0) == false) {
+        //         return 0;
+        //     }
+
+        //     if(isMax) {
+        //         let best = -1000;
+
+        //         board.forEach((slot) => {
+        //             if (slot == 0) {
+        //                 // make Maximizer Move
+        //                 slot.value = 1;
+
+        //                 best = Math.max(best, minimax(board, depth + 1, !isMax))
+
+        //                 slot.value = 0;
+        //             }
+        //         })
+        //         return best;
+        //     } else {
+        //         let best = 1000;
+
+        //         board.forEach((slot) => {
+        //             if (slot.value == 0) {
+        //                 slot.value = 2;
+
+        //                 best = Math.min(best, minimax(board, depth + 1, !isMax));
+
+        //                 slot.value = 0;
+        //             } 
+        //         })
+        //         return best;
+        //     }
+
+        // }
+        // // BEST AI?
+        // function findBestMove(board) {
+        //     let bestVal = -1000;
+        //     let bestMove = -1;
+        //     let i = 0;
+        //     board.forEach((slot) => {
+        //         if (slot == 0) {
+        //             slot = 1;
+
+        //             let moveVal = minimax(board, 0, false);
+                    
+        //             if (moveVal > bestVal) {
+        //                 bestMove = slot[i];
+        //             }
+
+        //             slot = 0; 
+        //             i++;
+        //         }
+        //     })
+        //     console.log("The value of the best move is " + bestVal);
+
+        //     return bestMove;
+        // } 
+
     
         // This can DEF be rebuilt better
-        const checkGameBoard = () => {
-            if (gameBoardArray[0] == 1 && gameBoardArray[1] == 1 && gameBoardArray[2] == 1) {
-                playerWinAlert(playerOne);                
-            } else if (gameBoardArray[3] == 1 && gameBoardArray[4] == 1 && gameBoardArray[5] == 1) {
-                playerWinAlert(playerOne);
-            } else if (gameBoardArray[6] == 1 && gameBoardArray[7] == 1 && gameBoardArray[8] == 1) {
-                playerWinAlert(playerOne);
-            } else if (gameBoardArray[0] == 1 && gameBoardArray[3] == 1 && gameBoardArray[6] == 1) {
-                playerWinAlert(playerOne);
-            } else if (gameBoardArray[1] == 1 && gameBoardArray[4] == 1 && gameBoardArray[7] == 1) {
-                playerWinAlert(playerOne);
-            } else if (gameBoardArray[2] == 1 && gameBoardArray[5] == 1 && gameBoardArray[8] == 1) {
-                playerWinAlert(playerOne);
-            } else if (gameBoardArray[0] == 1 && gameBoardArray[4] == 1 && gameBoardArray[8] == 1) {
-                playerWinAlert(playerOne);
-            } else if (gameBoardArray[2] == 1 && gameBoardArray[4] == 1 && gameBoardArray[6] == 1) {
-                playerWinAlert(playerOne);
-            } else if (gameBoardArray[0] == 2 && gameBoardArray[1] == 2 && gameBoardArray[2] == 2) {
-                playerWinAlert(playerTwo);
-            } else if (gameBoardArray[3] == 2 && gameBoardArray[4] == 2 && gameBoardArray[5] == 2) {
-                playerWinAlert(playerTwo);
-            } else if (gameBoardArray[6] == 2 && gameBoardArray[7] == 2 && gameBoardArray[8] == 2) {
-                playerWinAlert(playerTwo);
-            } else if (gameBoardArray[0] == 2 && gameBoardArray[3] == 2 && gameBoardArray[6] == 2) {
-                playerWinAlert(playerTwo);
-            } else if (gameBoardArray[1] == 2 && gameBoardArray[4] == 2 && gameBoardArray[7] == 2) {
-                playerWinAlert(playerTwo);
-            } else if (gameBoardArray[2] == 2 && gameBoardArray[5] == 2 && gameBoardArray[8] == 2) {
-                playerWinAlert(playerTwo);
-            } else if (gameBoardArray[0] == 2 && gameBoardArray[4] == 2 && gameBoardArray[8] == 2) {
-                playerWinAlert(playerTwo);
-            } else if (gameBoardArray[2] == 2 && gameBoardArray[4] == 2 && gameBoardArray[6] == 2) {
-                playerWinAlert(playerTwo);
+
+        const isMovesLeft = (index) => {
+            let markedGameSlot = document.querySelector(`.gameSlot[data-pos="${index}"]`);
+            
+            while (!(markedGameSlot.textContent == "")) {
+                index = makeMoveAI();
+                console.log(`index: ${index}`);
+                //returnObj = isMovesLeft(index);
+                markedGameSlot = document.querySelector(`.gameSlot[data-pos="${index}"]`);
+                console.log("PlayerAI turn# " + playerAI.playerTurn);
+                if (playerAI.playerTurn == 4) {
+                    return false;
+                }
+            }
+
+            return {
+                index, 
+                markedGameSlot
+            };     
+        }
+
+        const checkGameBoard = (player, marker) => {
+            // Rows
+            if (gameBoardArray[0] == marker && gameBoardArray[1] == marker && gameBoardArray[2] == marker) {
+                playerWinAlert(player);
+                if (player == playerOne) {
+                    return 10;
+                } else {
+                    return -10;
+                }   
+            } else if (gameBoardArray[3] == marker && gameBoardArray[4] == marker && gameBoardArray[5] == marker) {
+                playerWinAlert(player);
+                if (player == playerOne) {
+                    return 10;
+                } else {
+                    return -10;
+                }   
+            } else if (gameBoardArray[6] == marker && gameBoardArray[7] == marker && gameBoardArray[8] == marker) {
+                playerWinAlert(player);
+                if (player == playerOne) {
+                    return 10;
+                } else {
+                    return -10;
+                }   
+            // Columns
+            } else if (gameBoardArray[0] == marker && gameBoardArray[3] == marker && gameBoardArray[6] == marker) {
+                playerWinAlert(player);
+                if (player == playerOne) {
+                    return 10;
+                } else {
+                    return -10;
+                }   
+            } else if (gameBoardArray[1] == marker && gameBoardArray[4] == marker && gameBoardArray[7] == marker) {
+                playerWinAlert(player);
+                if (player == playerOne) {
+                    return 10;
+                } else {
+                    return -10;
+                }   
+            } else if (gameBoardArray[2] == marker && gameBoardArray[5] == marker && gameBoardArray[8] == marker) {
+                playerWinAlert(player);
+                if (player == playerOne) {
+                    return 10;
+                } else {
+                    return -10;
+                }   
+            // Diaganol
+            } else if (gameBoardArray[0] == marker && gameBoardArray[4] == marker && gameBoardArray[8] == marker) {
+                playerWinAlert(player);
+                if (player == playerOne) {
+                    return 10;
+                } else {
+                    return -10;
+                }   
+            } else if (gameBoardArray[2] == marker && gameBoardArray[4] == marker && gameBoardArray[6] == marker) {
+                playerWinAlert(player);
+                if (player == playerOne) {
+                    return 10;
+                } else {
+                    return -10;
+                }   
             } else if (playerOne.playerTurn == 5) {
                 console.log("Game was a Tie!")
                 gameState = 0;
+                return 0;
             }
+            return 0;
     
         };
     
@@ -334,7 +532,7 @@ const Gameflow = () => {
             playerOne.playerTurn = 0;
             playerTwo.playerTurn = 0;
             playerAI.playerTurn = 0;
-            gameBoardArray = [];
+            console.log(gameBoardArray);
             // Create this function
             // refreshGameBoard();
         }
@@ -342,6 +540,7 @@ const Gameflow = () => {
         return {
             gameBoardArray,
             checkGameBoard,
+            isMovesLeft,
             // winningCombos,
             refreshGameBoard,
             // displayGameBoard, 
@@ -351,7 +550,54 @@ const Gameflow = () => {
         };
     })();
 
-    const makeMoveAI = () => {
+    const makeMoveAI = (gameBoard) => {
+
+        const evaluateAINextMove = () => {
+            // Rows
+            if (Gameboard.gameBoardArray[0] == 1 && Gameboard.gameBoardArray[1] == 1 && Gameboard.gameBoardArray[2] == 1) {
+                return 10;
+            } else if (Gameboard.gameBoardArray[3] == 1 && Gameboard.gameBoardArray[4] == 1 && Gameboard.gameBoardArray[5] == 1) {
+                return 10;
+            } else if (Gameboard.gameBoardArray[6] == 1 && Gameboard.gameBoardArray[7] == 1 && Gameboard.gameBoardArray[8] == 1) {
+                return 10;
+            // Columns
+            } else if (Gameboard.gameBoardArray[0] == 1 && Gameboard.gameBoardArray[3] == 1 && Gameboard.gameBoardArray[6] == 1) {
+                return 10;
+            } else if (Gameboard.gameBoardArray[1] == 1 && Gameboard.gameBoardArray[4] == 1 && Gameboard.gameBoardArray[7] == 1) {
+                return 10;
+            } else if (Gameboard.gameBoardArray[2] == 1 && Gameboard.gameBoardArray[5] == 1 && Gameboard.gameBoardArray[8] == 1) {
+                return 10;
+            // Diaganol 
+            } else if (Gameboard.gameBoardArray[0] == 1 && Gameboard.gameBoardArray[4] == 1 && Gameboard.gameBoardArray[8] == 1) {
+                return 10;
+            } else if (Gameboard.gameBoardArray[2] == 1 && Gameboard.gameBoardArray[4] == 1 && Gameboard.gameBoardArray[6] == 1) {
+                return 10;
+            // Rows
+            } else if (Gameboard.gameBoardArray[0] == 2 && Gameboard.gameBoardArray[1] == 2 && Gameboard.gameBoardArray[2] == 2) {
+                return -10;
+            } else if (Gameboard.gameBoardArray[3] == 2 && Gameboard.gameBoardArray[4] == 2 && Gameboard.gameBoardArray[5] == 2) {
+                return -10;
+            } else if (Gameboard.gameBoardArray[6] == 2 && Gameboard.gameBoardArray[7] == 2 && Gameboard.gameBoardArray[8] == 2) {
+                return -10;
+            // Columns
+            } else if (Gameboard.gameBoardArray[0] == 2 && Gameboard.gameBoardArray[3] == 2 && Gameboard.gameBoardArray[6] == 2) {
+                return -10;
+            } else if (Gameboard.gameBoardArray[1] == 2 && Gameboard.gameBoardArray[4] == 2 && Gameboard.gameBoardArray[7] == 2) {
+                return -10;
+            } else if (Gameboard.gameBoardArray[2] == 2 && Gameboard.gameBoardArray[5] == 2 && Gameboard.gameBoardArray[8] == 2) {
+                return -10;
+            // Diaganol 
+            } else if (Gameboard.gameBoardArray[0] == 2 && Gameboard.gameBoardArray[4] == 2 && Gameboard.gameBoardArray[8] == 2) {
+                return -10;
+            } else if (Gameboard.gameBoardArray[2] == 2 && Gameboard.gameBoardArray[4] == 2 && Gameboard.gameBoardArray[6] == 2) {
+                return -10;
+            } else if (playerOne.playerTurn == 5) {
+                return 0;
+            }
+            return 0;
+    
+        };
+
         if (gameDifficulty == 0) {
             const index = getRdmInt(0, 8);
             return index;
@@ -359,7 +605,8 @@ const Gameflow = () => {
 
         if (gameDifficulty == 1) {
             console.log("Game Difficulty 2 WIP");
-            const index = getRdmInt(0, 8);
+            const index = findBestMove(gameBoard);
+            console.log("findBestMoveIndex" + index);
             return index;
         }
 
@@ -369,13 +616,91 @@ const Gameflow = () => {
             return index;
         }
 
-        // const index = getRdmInt(0, 8);
-        // return index;
+        // This could likely be combined to evaluate winner as well (CHANGE NAME TO evaluateBoard)
+
+
+        function minimax(board, depth, isMax) {
+            let score = evaluateAINextMove();
+
+            if (score == 10) {
+                return score;
+            }
+
+            if (score == -10) {
+                return score;
+            }
+
+            if (Gameboard.isMovesLeft == false) {
+                return 0;
+            }
+
+            if(isMax) {
+                let best = -1000;
+
+                board.forEach((slot) => {
+                    if (slot == 0) {
+                        // make Maximizer Move
+                        slot.value = 1;
+
+                        best = Math.max(best, minimax(board, depth + 1, !isMax))
+
+                        slot.value = 0;
+                    }
+                })
+                return best;
+            } else {
+                let best = 1000;
+
+                board.forEach((slot) => {
+                    if (slot.value == 0) {
+                        slot.value = 2;
+
+                        best = Math.min(best, minimax(board, depth + 1, !isMax));
+
+                        slot.value = 0;
+                    } 
+                })
+                return best;
+            }
+
+        }
+        // BEST AI? KEEPS RETURNING HIGHEST INDEX with no regard for the board
+        function findBestMove(board) {
+            let bestVal = -1000;
+            let bestMove = -1;
+            let i = 0;
+            board.forEach((slot) => {
+                if (slot == 0) {
+                    slot = 1;
+
+                    let moveVal = minimax(board, 0, false);
+                    
+                    if (moveVal > bestVal) {
+                        bestMove = i;
+                        console.log("bestMove = " + bestMove);
+                    }
+
+                    slot = 0; 
+                    i++;
+                    
+                } else {
+                    i++
+                }
+            });
+            console.log("The value of the best move is " + bestVal);
+
+            return bestMove;
+        } 
     }
 
     function getRdmInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+
+    return {
+        Gameboard,
+    }
+
 
 }
 
